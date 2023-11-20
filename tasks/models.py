@@ -11,4 +11,4 @@ class Task(models.Model):
     attempt_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.title
+        return f"{self.task_id}: {self.title}"
