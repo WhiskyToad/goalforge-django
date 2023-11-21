@@ -1,8 +1,8 @@
-from rest_framework import viewsets
-from .models import Task
-from .serializers import TasksSerializer
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from .models import Task
+from .serializers import TasksSerializer
 
 
 class TasksViewSet(viewsets.ModelViewSet):
@@ -21,5 +21,29 @@ class TasksViewSet(viewsets.ModelViewSet):
         serializer = TasksSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["put"])
+    def update_task(self, request, pk=None):
+        task = self.get_object()
+        serializer = TasksSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["delete"])
+    def delete_task(self, request, pk=None):
+        task = self.get_object()
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["post"])
+    def complete_task(self, request, pk=None):
+        task = self.get_object()
+        task.completed = True
+        task.save()
+        return Response(
+            {"message": "Task marked as completed"}, status=status.HTTP_200_OK
+        )
