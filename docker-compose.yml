@@ -3,18 +3,9 @@ version: "3"
 services:
   web:
     build: .
-    image: goal-forge
-    command:
-      [
-        "./wait-for-postgres.sh",
-        "db",
-        "python",
-        "manage.py",
-        "runserver",
-        "0.0.0.0:8000",
-      ]
+    command: python ./src/manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - .:/code
     ports:
       - "8000:8000"
     depends_on:
@@ -25,8 +16,8 @@ services:
   db:
     image: postgres:latest
     environment:
-      POSTGRES_DB: yourdb
-      POSTGRES_USER: youruser
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdbname
+      POSTGRES_USER: yourdbuser
+      POSTGRES_PASSWORD: yourdbpassword
     ports:
       - "5432:5432"
